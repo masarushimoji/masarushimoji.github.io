@@ -9,8 +9,34 @@
       /* Import a pretty monospace font from Google Fonts */
       @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap');
 
+      /* Custom highlight color for a premium feel */
+      ::selection {
+        background-color: #7f0019;
+        color: #f5f5f4;
+      }
+
+      /* Set up CSS variables for the cursor spotlight */
+      :root {
+        --cursor-x: 50vw;
+        --cursor-y: 50vh;
+      }
+
+      /* Faster, snappier fade-in animation */
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
       body {
-        background-color: #f5f5f4; /* A very soft, warm off-white */
+        background-color: #f5f5f4; 
+        
+        /* The "Lattice Graph Paper" background pattern */
+        background-image: 
+          linear-gradient(rgba(41, 37, 36, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(41, 37, 36, 0.04) 1px, transparent 1px);
+        background-size: 35px 35px; /* Size of the grid squares */
+        background-position: center top; 
+
         color: #292524; /* A soft dark grey, easier on the eyes than pure black */
         font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
         line-height: 1.7; /* Adds breathing room between lines of text */
@@ -21,11 +47,44 @@
         padding: 15vh 20px; /* Pushes the content down slightly from the top */
       }
 
+      /* The subtle Cursor Spotlight overlay */
+      .spotlight {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none; /* Ensures the glow doesn't block you from clicking links */
+        background: radial-gradient(
+          circle 400px at var(--cursor-x) var(--cursor-y),
+          rgba(127, 0, 25, 0.04), /* A very faint, warm Muji-red glow */
+          transparent 80%
+        );
+        z-index: 10;
+      }
+
+      /* Apply the animation to all text elements, hiding them initially */
+      h1, p {
+        opacity: 0;
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+
+      /* Tighter staggering for a much faster cascade */
+      h1 { animation-delay: 0.1s; }
+      p:nth-of-type(1) { animation-delay: 0.2s; }
+      p:nth-of-type(2) { animation-delay: 0.3s; }
+      p:nth-of-type(3) { animation-delay: 0.4s; }
+
       h1 {
         font-size: 1.8rem;
         font-weight: 700;
         margin-bottom: 1.5rem;
         color: #1c1917;
+        
+        /* The vertical red line */
+        border-left: 4px solid #7f0019;
+        padding-left: 12px;
+        margin-left: -16px; /* Keeps the text perfectly aligned with the paragraphs below */
       }
 
       p {
@@ -33,25 +92,70 @@
         font-size: 1rem;
       }
 
-      /* Style the link so it blends beautifully but is clearly clickable */
+      /* Minimal Muji Red accent for the links */
       a {
-        color: #57534e;
+        display: inline-block; /* Required to allow the transform (magnetic pull) to work */
+        color: #7f0019; 
         text-decoration: none;
-        border-bottom: 1px solid #a8a29e;
-        transition: color 0.2s ease, border-color 0.2s ease;
+        border-bottom: 1px solid rgba(127, 0, 25, 0.3); 
+        
+        /* Adds a snappy transition for when the link snaps back to its original place */
+        transition: color 0.2s ease, border-color 0.2s ease, transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
       }
 
-      /* Hover effect for the link */
+      /* Hover effect darkens the red slightly */
       a:hover {
-        color: #000000;
-        border-bottom-color: #000000;
+        color: #4a000f; 
+        border-bottom-color: #4a000f;
       }
     </style>
   </head>
   <body>
+    <div class="spotlight"></div>
+
     <h1>Welcome, I'm Maru!</h1>
     <p>I'm currently a Master's student at King's College London, enrolled in the Advanced Computing MSc program.</p>
-    <p>My research background and passion lie in the development and analysis of lattice reduction algorithms, with a specific focus on post-quantum lattice-based digital signatures. My goal is to help organizations transition to these rapidly evolving cryptographic standards, ensuring their systems remain highly efficient while maintaining paramount security against quantum-enabled adversaries.</p>
-    <p>Please contact me through <a href="mailto:masarushimoji@hotmail.com">my email</a> (masarushimoji@hotmail.com) for any enquiries, or connect with me on <a href="https://www.linkedin.com/in/masarushimoji/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.</p>
+    <p>My research and passion lie in the development and analysis of lattice reduction algorithms, empirical experimentation of lattice-based cryptanalysis methods on classical public-key cryptography such as RSA and post-quantum lattice-based digital signatures. I have a strong foundation in both the complex mathematical underpinnings of lattices and their practical software implementation using libraries such as fplll. My goal is to help organisations transition to these rapidly evolving cryptographic standards, ensuring their systems remain highly efficient while maintaining paramount security against quantum-enabled adversaries.</p>
+    <p>Please feel free to contact me via <a href="mailto:masarushimoji@hotmail.com"> email</a> (masarushimoji@hotmail.com) for any enquiries, or connect with me on <a href="https://www.linkedin.com/in/masarushimoji/" target="_blank" rel="noopener noreferrer">LinkedIn</a>.</p>
+
+    <script>
+      const root = document.documentElement;
+      
+      // 1. Spotlight and Grid Parallax
+      document.addEventListener('mousemove', (e) => {
+        // Update the CSS variables for the Spotlight
+        root.style.setProperty('--cursor-x', `${e.clientX}px`);
+        root.style.setProperty('--cursor-y', `${e.clientY}px`);
+
+        // Parallax for the Background Grid
+        const moveX = (e.clientX / window.innerWidth * 15) - 7.5;
+        const moveY = (e.clientY / window.innerHeight * 15) - 7.5;
+        document.body.style.backgroundPosition = `calc(50% + ${-moveX}px) ${-moveY}px`;
+      });
+
+      // 2. Magnetic Links
+      const links = document.querySelectorAll('a');
+      links.forEach(link => {
+        link.addEventListener('mousemove', (e) => {
+          const rect = link.getBoundingClientRect();
+          
+          // Find the exact center of the hyperlink
+          const centerX = rect.left + rect.width / 2;
+          const centerY = rect.top + rect.height / 2;
+          
+          // Calculate the distance between the mouse and the center of the link
+          const distanceX = e.clientX - centerX;
+          const distanceY = e.clientY - centerY;
+          
+          // Apply a fraction (30%) of that distance to pull the link towards the mouse
+          link.style.transform = `translate(${distanceX * 0.3}px, ${distanceY * 0.3}px)`;
+        });
+        
+        // When the mouse leaves, snap the link back to its original position
+        link.addEventListener('mouseleave', () => {
+          link.style.transform = 'translate(0px, 0px)';
+        });
+      });
+    </script>
   </body>
 </html>
